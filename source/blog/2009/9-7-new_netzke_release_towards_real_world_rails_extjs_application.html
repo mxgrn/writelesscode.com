@@ -1,0 +1,65 @@
+--- 
+title:      "New Netzke release - towards real-world Rails ExtJS application"
+created_at: 2009-09-07
+kind: article
+outdated: true
+slug: "new_netzke_release_towards_realworld_rails_extjs_application"
+tags: [netzke]
+---
+<p>I had to put Netzke aside for a while in order to do some contract job to maintain my traveler’s life. It was a nice change by itself: I was doing “pure Rails”, no Ext, and, among other things, had to put my hands on Cucumber, which was a lot of fun. However, the idea to create a real-world application using Netzke kept on penetrating my mind, and, after preliminary evaluation of the effort with one of my clients, I finally set off for the adventure.</p>
+
+<p>During several weeks of intense work I was facing the fact that Netzke was not ready. The ratio of time I was spending to extend and refactor the framework to time I was programming application business-logic was about 9 to 1. Yet, the things were gradually changing, and now Netzke is in that state that provides quite some satisfaction to me as developer, while I’m busy creating application specific widgets and continue to introduce new features into the working prototype, which my client has access to. Of course, Netzke keeps on changing rapidly, and even then, I felt that it was time to share some results.</p>
+
+<p>This is an overview of the most significant changes that took place in the netzke v0.5.0 release. Later I will try to reveal the details in dedicated blog posts, taking one aspect at a time. In mean while (and while reading this post), you may have a look at the updated live demo/tutorials of Netzke <a href='http://netzke-demo.writelesscode.com/'>here</a>.</p>
+
+<h1 id='refactoring'>Refactoring</h1>
+
+<p>It’s probably worth mentioning that the main thing I’m driven by while working on Netzke, is some kind of intellectual satisfaction that I’m getting while trying to do the things “the right way”. It’s like building your own city, where a lot of care should be taken on different aspects of it, so that it functions well as a whole. I kept on rewriting different parts of Netzke as my grasp of JavaScript/Ext and Ruby/Rails kept on deepening, and as I was getting a clearer view on how the whole framework should work. Once in a while I was even getting a weird thought like “man, I just I understood my own framework a bit better…” The current release shows significant code improvements. A lot of what I would now call “lame tricks” is gone, as I use more of Ext conventions in what concerns extending Ext’s components. An important move was that inheriting one Netzke widget from the other in Ruby code now actually means inheriting on the JavaScript level (as implemented in Ext), which means even less - and cleaner - generated JavaScript code. The code is still far from what I would like to see it, but it’s definitely more readable and consistent.</p>
+
+<h1 id='extended_clientserver_communication'>Extended client-server communication</h1>
+
+<p>A Netzke widget consists of client and server parts, and those need to communicate. It used to be through declaring interface points in a widget, by means of which the JavaScript part was getting the URL to communicate to its own server-side instance. Asynchronous issues were left to the developer, and there was no consistent way that the server-side instance would reply to those calls. Not any more.</p>
+
+<p>Declare an interface point in Ruby. On JavaScript side you will magically get a method with the same name. Just call it passing a JavaScript object with any number of properties as parameter. As the result, the method (again, with that same name) in the Ruby part gets called, receiving that object as hash. So far sounds pretty much like Ext.Direct, doesn’t it? What happens then, however, is that the Ruby method freely specifies which methods, with what parameters and in what sequence, should be executed back on the JavaScript side! Those methods can be <em>any</em> - including the ones you define yourself, and the ones provided by the Ext component that the widget is based on (like Ext.Panel’s setTitle, setDisable, hide, etc). It gives a lot of flexibility in what concerns client-server communication inside the widget. But that’s not all. By default, those methods get executed in the scope of the widget that issued the API call, but the server-side can direct these calls to <em>any nested widget</em> (and even to the parent), any level deep. If you don’t see the practical aspect of it yet, here’s how you can use it. Imagine, you have a complex compound BorderLayoutBased-widget, nesting several other widgets. How would it be possible, with one single round-trip to the server initiated by one of those widgets, update the data or the states of all other widgets? Now this is very easy, and an example will follow in a separate post.</p>
+
+<p>This change makes the existing tutorials in this blog somewhat outdated. Once I get to updated them, the amount of code in those will significantly reduce and simplify.</p>
+
+<h1 id='data_models_free_from_netzke_code'>Data models free from Netzke code</h1>
+
+<p>By default, the GridPanel and FormPanel do a pretty decent job on “figuring out” how to display the fields from the underlying model’s table. They do it by detecting the field’s type to apply the corresponding Ext editor (for grids) or xtype (for forms). One-to-many associations are handled with the help of comboboxes. But sometimes it’s desirable to specify per model how columns/fields are displayed in Grid/FormPanel. And often a “virtual attribute” is introduced into the model (a very common example is “password” and “password_confirmation” attributes for User model, provided by authentication solutions like authlogic), which should also be displayed as a column or field. Previously, you would need to specify it in the model itself, telling Netzke which columns should be displayed and how (you may want to set Ext.form.Field#inputType to “password” for those password attributes). Now this code is expected to be in helper modules, and is automatically picked-up by Netzke. No need to pollute your existing models.</p>
+
+<h1 id='better_widgets'>Better widgets</h1>
+
+<p>Several functional and usability improvements are introduced into existing widgets. Some examples are:</p>
+
+<ol>
+<li>GridPanel now supports optional adding/editing records via filling out a form. Multi-record editing is also supported - simply select several rows and do “Edit in form”.</li>
+
+<li>Besides the earlier introduced column context filters, GridPanel optionally provides another, much more extended and configurable way to search data - by means of filling out a “Search” form. That form can be dynamically configured (generally, in the configuration mode only, as anything else) by changing search criterium per field (inline with binarylogic-searchlogic). It’s rather a work in progress, but can be pretty useful already now.</li>
+
+<li>GridPanel now supports context menu, which is also configurable per widget instance (currently in a primitive way - by editing the JSON string, but at least it has a built-in JSON validator).</li>
+
+<li>GridPanel can now be loaded along with initial data, which saves a request to the server.</li>
+
+<li>Configuration panels for GridPanel and FormPanel are now improved for better user experience in general.</li>
+
+<li>The ”<a href='http://writelesscode.com/past/2009/5/7/netzke_intuitive_application_configuration_with_help_of_masquerading/'>masquerading</a>” functionality found its way straight to BasicApp.</li>
+</ol>
+
+<h1 id='keeping_up_with_latest_gems'>Keeping up with latest gems</h1>
+
+<p>As you may know, the wonderful Binarylogic’s searchlogic gem was updated to the version 2.0. As one of the major changes, the author removed the built-in pagination functionality from it, suggesting to use the will_paginate gem instead. Netzke now happily follows the path.</p>
+
+<h1 id='documentation'>Documentation</h1>
+
+<p>Finally, I started to actively document the code. Just see the RDocs for Netzke gems. The docs are supposed to not only provide you with configuration options for the widgets, but also to give you some insight in how the framework is put together.</p>
+
+<h1 id='hosted_by_github'>Hosted by GitHub</h1>
+
+<p>I moved the gems to GitHub, so now they are available as nomadcoder-netzke-core and nomadcoder-netzke-basepack, according to GitHub’s conventions. I may continue releasing to RubyForge as well, but for now it’s not guaranteed to be up-to-date.</p>
+
+<h1 id='reallife_application'>Real-life application</h1>
+
+<p>I realize now, how much a real-world project can influence and reinforce the progress of the underlying framework. As I mentioned already, I’m using Netzke for building an application for one of my clients. The result is going to be a sophisticated logistics-oriented multi-role/user RIA which is supposed to go live within some weeks. I reuse a lot of Netzke code as is, because it’s made as generic and configurable as possible, as well as create application-specific widgets using the widgets from netzke-basepack as building blocks. My client is very impressed not only by the speed and usability of the application as seen by his own clients, but also by the amount of “administration freedom” he gets, being able to configure every aspect of his clients’ experience. We are planning to put online a functional demo (with test data) of this application. It’s going to be a great showcase for Netzke.</p>
+
+<p>Also some widgets created for this application may later find their way into netzke-basepack (or maybe a separate “logistics” package will emerge). One of them is a TabPanel-based widget that loads multiple instances of the same widget (e.g. GridPanel) into its tabs, where those can be individually configured (thus you may be getting different columns of the same table to be seen in different tabs). Tabs are added/edited/deleted on the fly, and, as anything else in Netzke, are configurable on the user/role basis. Another example is an extension to GridPanel that supports configurable statistics window next to it. This, and much more, will be out there as a demo some time soon.</p>

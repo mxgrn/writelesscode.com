@@ -1,0 +1,72 @@
+--- 
+title:      "Netzke demo update: actions, menus and authentication"
+created_at: 2009-03-19
+kind: article
+outdated: true
+slug: "netzke_demo_update_actions_menus_and_authentication"
+tags: [tutorials, netzke]
+---
+<p><em>UPDATE (2009-09-07): This tutorial is outdated with the release of netzke-basepack v0.5.0. Please, refer to <a href="http://wiki.github.com/nomadcoder/netzke">the project's wiki</a> for updated articles.</em> After releasing the next version of the Netzke gems, I also updated the live demo (<a href='http://netzke-demo.writelesscode.com/'>http://netzke-demo.writelesscode.com/</a>). Along with some minor fixes (like preventing the user to trigger sorting on virtual columns in the GridPanel), and providing a FormPanel-based widget in the “General” pane of a widget’s configuration window, the BasicApp demo has been updated in a way that it no longer requires the user to log in. However the access to the User management is only granted to an authenticated user. Further I describe those simple steps that were needed to achieve that.</p>
+
+<p>First of all, we need to define the actions (where “action” is a reflection of Ext.Action) available in our BasicAppDemo widget:</p>
+
+<pre><code><span class='keyword'>def </span><span class='method'>actions</span>
+  <span class='punct'>{</span> 
+    <span class='symbol'>:clerks</span> <span class='punct'>=&gt;</span> <span class='punct'>{</span><span class='symbol'>:text</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>Clerks</span><span class='punct'>",</span> <span class='symbol'>:fn</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>loadWidgetByAction</span><span class='punct'>"},</span>
+    <span class='symbol'>:bosses</span> <span class='punct'>=&gt;</span> <span class='punct'>{</span><span class='symbol'>:text</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>Bosses</span><span class='punct'>",</span> <span class='symbol'>:fn</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>loadWidgetByAction</span><span class='punct'>"},</span>
+
+    <span class='comment'># Only allow administrative actions when user is logged in</span>
+    <span class='symbol'>:users</span> <span class='punct'>=&gt;</span> <span class='punct'>{</span><span class='symbol'>:text</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>Users</span><span class='punct'>",</span> <span class='symbol'>:fn</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>loadWidgetByAction</span><span class='punct'>",</span> 
+                              <span class='symbol'>:disabled</span> <span class='punct'>=&gt;</span> <span class='constant'>Netzke</span><span class='punct'>::</span><span class='constant'>Base</span><span class='punct'>.</span><span class='ident'>user</span><span class='punct'>.</span><span class='ident'>nil?</span><span class='punct'>}</span>
+  <span class='punct'>}</span>
+<span class='keyword'>end</span></code></pre>
+
+<p>The parameter “fn” specifying the action’s main event handler is optional. If it’s omitted, clicking on a menu item bound to a specific action will call a property function with the same name as the action’s. However, in this case we want all actions to refer to the same handler function which is found in BasicApp widget: loadWidgetByAction. This function receives the reference to the action in charge, and by default loads the widget with the same name as that of the action.</p>
+
+<p>Notice that the action “users” has an additional option “disabled” set to true when there’s no user logged in. This “disabled” option is a direct map to Ext.Action’s “disabled” config option.</p>
+
+<p>Now we only need to define the menus:</p>
+
+<pre><code><span class='keyword'>def </span><span class='method'>menu</span>
+  <span class='punct'>[{</span>
+    <span class='symbol'>:text</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>Go to</span><span class='punct'>",</span>
+    <span class='symbol'>:menu</span> <span class='punct'>=&gt;</span> <span class='punct'>%w{</span><span class='string'> clerks bosses users </span><span class='punct'>}</span>
+  <span class='punct'>}]</span>
+<span class='keyword'>end</span></code></pre>
+
+<p>As of netzke-core v0.2.9, the menu is specified as an array of either action names, or hashes that represent a submenu. To make this more clear, here’s how we would put 3 menu items - Clerks, Bosses and Users - in the top-level menu:</p>
+
+<pre><code><span class='keyword'>def </span><span class='method'>menu</span>
+  <span class='punct'>%w{</span><span class='string'> clerks bosses users </span><span class='punct'>}</span>
+<span class='keyword'>end</span></code></pre>
+
+<p>And here’s how to put Users in a separate sub-menu:</p>
+
+<pre><code><span class='keyword'>def </span><span class='method'>menu</span>
+  <span class='punct'>[{</span>
+    <span class='symbol'>:text</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>Go to</span><span class='punct'>",</span>
+    <span class='symbol'>:menu</span> <span class='punct'>=&gt;</span> <span class='punct'>%w{</span><span class='string'> clerks bosses </span><span class='punct'>}</span>
+  <span class='punct'>},{</span>
+    <span class='symbol'>:text</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>Administration</span><span class='punct'>",</span>
+    <span class='symbol'>:menu</span> <span class='punct'>=&gt;</span> <span class='punct'>%w{</span><span class='string'> users </span><span class='punct'>}</span>
+  <span class='punct'>}]</span>
+<span class='keyword'>end</span></code></pre>
+
+<p>The same way as defining menus, you can define bottom-bar and top-bar of a widget.</p>
+
+<p>So, now you can’t click the menu when you’re not logged in - it’s disabled. But if you’ve been attentive enough while playing with the demo, you’d have noticed the way how the browser history is managed: via modifying the URL. When you go to Clerks view, it gets #clerks appended to it, when you go to Bosses - you see #bosses. What would stop us to edit the URL by hand and to put #users instead and get the User view even without being authenticated? We need to prevent this, and we do that by overriding BasicApp’s interface_app_get_widget method, which gets AJAX-fully called when the user clicks from one widget to the other:</p>
+
+<pre><code><span class='comment'>#</span>
+<span class='comment'># Prevent unauthorized access to Users</span>
+<span class='comment'>#</span>
+<span class='keyword'>def </span><span class='method'>interface_app_get_widget</span><span class='punct'>(</span><span class='ident'>params</span><span class='punct'>)</span>
+  <span class='ident'>widget</span> <span class='punct'>=</span> <span class='ident'>params</span><span class='punct'>[</span><span class='symbol'>:widget</span><span class='punct'>].</span><span class='ident'>underscore</span>
+  <span class='keyword'>if</span> <span class='constant'>Netzke</span><span class='punct'>::</span><span class='constant'>Base</span><span class='punct'>.</span><span class='ident'>user</span><span class='punct'>.</span><span class='ident'>nil?</span> <span class='punct'>&amp;&amp;</span> <span class='ident'>widget</span> <span class='punct'>==</span> <span class='punct'>"</span><span class='string'>users</span><span class='punct'>"</span>
+    <span class='ident'>flash</span> <span class='symbol'>:error</span> <span class='punct'>=&gt;</span> <span class='punct'>"</span><span class='string'>You do not have access to users</span><span class='punct'>"</span>
+    <span class='punct'>{</span><span class='symbol'>:success</span> <span class='punct'>=&gt;</span> <span class='constant'>false</span><span class='punct'>,</span> <span class='symbol'>:flash</span> <span class='punct'>=&gt;</span> <span class='attribute'>@flash</span><span class='punct'>}.</span><span class='ident'>to_js</span>
+  <span class='keyword'>else</span>
+    <span class='keyword'>super</span>
+  <span class='keyword'>end</span>
+<span class='keyword'>end</span></code></pre>
+
+<p>I hope, the code is self-explanatory, at least until that level of details that I mean to address in this post.</p>

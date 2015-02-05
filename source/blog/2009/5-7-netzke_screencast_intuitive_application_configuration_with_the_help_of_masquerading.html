@@ -1,0 +1,72 @@
+--- 
+title:      "Netzke screencast: intuitive application configuration with the help of masquerading"
+created_at: 2009-05-06
+kind: article
+outdated: true
+slug: "netzke_intuitive_application_configuration_with_help_of_masquerading"
+tags: [screencast, netzke]
+---
+<p>Here’s some news about the Netzke framework: <a href='http://github.com/nomadcoder/netzke-core/tree/master'>netzke-core</a> v0.3.0 and <a href='http://github.com/nomadcoder/netzke-basepack/tree/master'>netzke-basepack</a> v0.4.0 gems are about to be released. In this post I’m putting a screencast (my first one, some things may not seem very smooth), that shows off a feature that I consider to be “a must have” before I come to my client and seriously suggest him to completely rewrite his old web-based app with Netzke. I call it “masquerading” - it’s all about intuitive application configuration, and I know that my client will love it.</p>
+
+<h1 id='refactoring_and_other_changes'>Refactoring and other changes</h1>
+
+<p>First, let me tell you about a major refactoring that took place in the grid columns and form fields configuration part. Netzke got rid of 3 database tables: 1 in netzke-core, and 2 in netzke-basepack. Those tables were used to store the columns for GridPanel and fields for FormPanel widgets. When I started implementing “masquerading” (see below), I realized, that I wanted a single model that would store <em>all</em> configuration for <em>any</em> type of widget. So, NetzkePreference model has been extended to do just that: now it stores columns and fields, too - in the JSON format. It required creating a “database-free” model that simulates the basic behavior of a ActiveRecord model, with the difference that it receives and stores data from/to JSON string in the netzke_preferences table. This way a GridPanel would still be able to use that without any changes, which meant no major changes to the FieldsConfigurator widget.</p>
+
+<p>Other changes and improvements include:</p>
+
+<p>GridPanel:</p>
+
+<ul>
+<li>hiding columns through the column drop-down menu in GridPanel is now also persistent (same way as column resizing and reordering is)</li>
+
+<li>datetime editor now works in GridPanel</li>
+
+<li>bugfix: assigning an association record (like assigning a boss to a clerk) by virtual column (like boss__name) works now</li>
+
+<li>bugfix: an old bug that made GridPanel misbehave after reordering the columns is gone</li>
+</ul>
+
+<p>FormPanel:</p>
+
+<ul>
+<li>FormPanel now can have combo boxes same way as GridPanel does</li>
+</ul>
+
+<p>TabPanel:</p>
+
+<ul>
+<li>you can specify :preloaded =&gt; true in a config for a tab in TabPanel, to preload the widget of that tab along with the TabPanel itself (it’ll save a server-request when you switch to that tab - may be useful in some cases)</li>
+</ul>
+
+<p>General:</p>
+
+<ul>
+<li>
+<p>all widgets got the <em>session</em> method in its disposal, which provides access to the current Rails session. It can be used, for instance, by BasicApplication-derrived widgets to manage application states. In addition, session<span>:netzke_just_logged_in</span> and session<span>:netzke_just_logged_out</span> get set by Netzke after each login/logout.</p>
+</li>
+
+<li>
+<p>weak_children_config and strong_children_config methods can now be declared by a widget, which specifies weak and strong configuration that every descendent of this widget will receive (e.g. display/hide the configuration tool, which is used in netzke-demo to implement the “configuration mode” of the application). By “weak” I refer to configuration that can be overwritten by the widget itself, while “strong” configuration overwrites widget’s configuration as last. A Ruby programmer will quicker understand it this way (where config options are represented by a Hash):</p>
+
+<pre><code>  <span class='ident'>final_widget_config</span> <span class='punct'>=</span> <span class='ident'>weak_children_config</span><span class='punct'>.</span>
+    <span class='ident'>recursive_merge</span><span class='punct'>(</span><span class='ident'>child_config</span><span class='punct'>).</span>
+    <span class='ident'>recursive_merge</span><span class='punct'>(</span><span class='ident'>strong_children_config</span><span class='punct'>)</span></code></pre>
+</li>
+
+<li>
+<p>gems are now autotest-compatible (and have a slightly better test coverage)</p>
+</li>
+</ul>
+
+<h1 id='masquerading'>Masquerading</h1>
+
+<p>What is that what I called “masquerading”? To explain that as clear as possible, let’s consider the following scenario for a logistics web-application (by the way, similar scenarios are something <em>so</em> common, that I really hope Netzke can be of a great help in creating lots of different types of RIA).</p>
+
+<p>Let’s say, some company exports flowers, and its database has a huge table called “orders”, that specify every aspect of an order. This table is used by users with different roles: clients (who actually order flowers), suppliers (who sell them), customs clerks (to fill out additional fields for customs declarations), truck-drivers (to know which orders are in their truck and where it has to go), admins, etc, etc. It’s obvious, that not every role is interested in all those tens of fields that table “orders” contains. More than that, different roles may need different access writes for different fields, or need to see different records. If you ever worked in logistics (or banking, or book-keeping, or any other are business that requires a complex system like that), you may know, that the requirements “who-can-do-what” can change so frequently, that paying a developer to re-code the requirements would cost lots of money. Wouldn’t it be great, if our logistics company admins were able to reconfigure these things themselves? Yes, it would, but how complex would such a configuration be?</p>
+
+<p>My client (having still a rather small company), needs to configure access to about 12 database tables (one of which contains about 70 fields) for 5 different roles. He’s got all those tables and fields listed in one view, where he can specify which fields in which table for which role/user must have which properties… Absence of visual feedback of such a configuration is terrifying and error-prone: to see the actual results of his configuration, the admin needs to log out and log in as a different user.</p>
+
+<p>Now we come straight to Netzke’s “masquerading”: what it does, is allow the admin to do as if he’s one of his users (or <em>any</em> user of a role), and see how the system appears in front of that user’s eyes. <em>That</em> is “masquerading”. Having administrative rights, my client can further configure any aspect of any “view” (i.e. any Netzke widget) to the extend that that view is designed: those settings get stored for that user/role that my client is masquerading. Actually, it’s pretty simple. And to see that in action, have a look at the screencast below. It shows the upcoming version of <a href='http://github.com/nomadcoder/netzke-demo/tree/master'>netzke-demo</a> project, that will get released one of these days (along with the Netzke gems) and will be available live at <a href='http://netzke-demo.writelesscode.com/'>http://netzke-demo.writelesscode.com/</a> (actually, it’s already on github - see the “edge” brunches of each project).</p>
+
+<p>Please, feel free to post your remarks into the comments, and let me know about the attempts of using Netzke for building <em>your</em> application.</p>
+<object height="300" width="400"><param name="allowfullscreen" value="true"/><param name="allowscriptaccess" value="always"/><param name="movie" value="http://vimeo.com/moogaloop.swf?clip_id=4517750&amp;amp;server=vimeo.com&amp;amp;show_title=1&amp;amp;show_byline=1&amp;amp;show_portrait=0&amp;amp;color=&amp;amp;fullscreen=1"/><embed src="http://vimeo.com/moogaloop.swf?clip_id=4517750&amp;amp;server=vimeo.com&amp;amp;show_title=1&amp;amp;show_byline=1&amp;amp;show_portrait=0&amp;amp;color=&amp;amp;fullscreen=1" allowfullscreen="true" type="application/x-shockwave-flash" allowscriptaccess="always" height="300" width="400"/></object>
