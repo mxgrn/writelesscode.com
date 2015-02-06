@@ -117,10 +117,17 @@ configure :build do
   end
 end
 
+configure :development do
+  activate :disqus do |d|
+    # using a different shortname for production builds
+    d.shortname = nil
+  end
+end
+
 activate :deploy do |deploy|
   deploy.method = :rsync
   deploy.host   = 'writelesscode.com'
-  deploy.path   = 'www/goodbitlabs.com'
+  deploy.path   = 'www/writelesscode.com'
 
   # Optional Settings
   deploy.build_before = true

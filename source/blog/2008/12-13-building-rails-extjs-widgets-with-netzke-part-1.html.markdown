@@ -46,10 +46,10 @@ Create a simple application layout (in 'app/views/layout/application.html.erb'):
 ~~~html
 <head>
   <title>My first Netzke widget</title>
-  <%%= netzke_init %>
+  <%= netzke_init %>
 </head>
 <body>
-  <%%= yield %>
+  <%= yield %>
 </body>
 ~~~
 
@@ -71,7 +71,7 @@ This is enough for the simplest widget (by default, it results in a JS class inh
 ~~~html
 <h1>My tree panel</h1>
 <div style='width: 300px;'>
-  <%%= netzke :my_tree %>
+  <%= netzke :my_tree %>
 </div>
 ~~~
 
@@ -80,7 +80,7 @@ As you see, embedding a Netzke widget into a view is done with the `netzke` help
 You can specify the majority of options of the `Ext.Panel` component in the `:ext_config` hash, and this is where, I hope, it starts getting interesting. Try the following, for instance:
 
 ~~~ruby
-<%%= netzke :my_tree, :ext_config => {
+<%= netzke :my_tree, :ext_config => {
   :html => 'Just a simple panel for now',
   :title => 'Here comes the tree',
   :body_style => "padding: 5px;",
@@ -188,7 +188,7 @@ The method returns an array of tree nodes, which Netzke will translate into JSON
 ~~~html
 <h1>My tree</h1>
 <div style='width: 300px;'>
-  <%%= netzke :my_tree, :model => "Folder" %>
+  <%= netzke :my_tree, :model => "Folder" %>
 </div>
 ~~~
 
@@ -198,8 +198,8 @@ That's it! Reload your browser page and see the result.
 The best part of having a Netzke widget like this, is that it's very easily reusable. To start with, you may have multiple MyTree's in the same view (and Netzke is smart enough to not duplicate JS class definitions for each widget's instance). In order to do that, simply name them differently, and provide individual configuration for each one. Netzke will take care of each client-side instance of the widget talking to its proper server-side instance:
 
 ~~~html
-<%%= netzke :my_first_tree, :class_name => "MyTree", :model => "Folder", :ext_config => {:title => "Folders"} %>
-<%%= netzke :my_second_tree, :class_name => "MyTree", :model => "Categories", :ext_config => {:title => "Categories"} %>
+<%= netzke :my_first_tree, :class_name => "MyTree", :model => "Folder", :ext_config => {:title => "Folders"} %>
+<%= netzke :my_second_tree, :class_name => "MyTree", :model => "Categories", :ext_config => {:title => "Categories"} %>
 ~~~
 
 > We didn't have to specify `class_name` option before, because, by convention, Netzke could infer it from the widget's name.
