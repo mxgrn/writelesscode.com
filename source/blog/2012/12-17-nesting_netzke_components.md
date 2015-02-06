@@ -12,20 +12,20 @@ As I mentioned in the end of the [previous tutorial](/blog/2012/10/20/extjs-rail
 
 Assuming you already have the [first part](/blog/2012/10/20/extjs-rails-crud-application-in-7-minutes/) of the tutorial up-and-running, let's start by creating a new component called `TaskTabPanel`, and indicate that its [client class](http://rdoc.info/github/netzke/netzke-core#Client_class) should inherit from [Ext.tab.Panel](http://docs.sencha.com/ext-js/4-1/#!/api/Ext.tab.Panel):
 
-<% highlight :ruby do %>
+~~~ruby
 class TaskTabPanel < Netzke::Base
   js_configure do |c|
     c.extend = "Ext.tab.Panel"
   end
 end
-<% end %>
+~~~
 
 Update `views/welcome/index.html.erb` to show our newly created component:
 
-<% highlight :erb do %>
+~~~erb
 <h1>Tasks</h1>
 <%%= netzke :task_tab_panel, height: 400 %>
-<% end %>
+~~~
 
 If we reload our application now, it won't be much, as our tab panel has no tabs yet. We want to see 3 tabs containing our previously created Tasks component, each showing a different subset of tasks.
 
@@ -33,7 +33,7 @@ If we reload our application now, it won't be much, as our tab panel has no tabs
 
 We need 2 simple steps to nest a few instances of an existing Netzke component in our tab panel. First, let's declare them as child components inside `TaskTabPanel`:
 
-<% highlight :ruby do %>
+~~~ruby
 class TaskTabPanel < Netzke::Base
   js_configure do |c|
     c.extend = "Ext.tab.Panel"
@@ -51,11 +51,11 @@ class TaskTabPanel < Netzke::Base
     c.klass = Tasks
   end
 end
-<% end %>
+~~~
 
 Now, with child components declared, Netzke gives us 2 choices on how to show them to the user. We could nest them statically in the current component, or dynamically load them on the user request using `netzkeLoadComponent` client-class method. Let's do the simplest thing now, and add all 3 of them statically as tabs. For this we use Ext JS's usual `items` property:
 
-<% highlight :ruby do %>
+~~~ruby
 class TaskTabPanel < Netzke::Base
   js_configure do |c|
     c.extend = "Ext.tab.Panel"
@@ -78,7 +78,7 @@ class TaskTabPanel < Netzke::Base
     c.items = [:incomplete_tasks, :completed_tasks, :all_tasks]
   end
 end
-<% end %>
+~~~
 
 Note, that we didn't have to provide the detailed configuration for the tabs, and just used Symbols referring the child components - Netzke does the expansion of those behind the scenes.
 
@@ -90,7 +90,7 @@ Now we have 3 tabs, each with an instance of `Tasks` component, but they are all
 
 One way to change this would be by extending our `Tasks` component 3 times and configure each of them separately, for example, for completed tasks:
 
-<% highlight :ruby do %>
+~~~ruby
 class CompletedTasks < Tasks
   def configure(c)
     super
@@ -98,11 +98,11 @@ class CompletedTasks < Tasks
     c.scope = {done: true}
   end
 end
-<% end %>
+~~~
 
 Then we could use it without any further configuration in `TaskTabPanel` by specifying `c.klass = CompletedTasks` inside the `component` block. However, in this case it would be an overkill, and we can simply configure the 3 nested grids directly in `TaskTabPanel`:
 
-<% highlight :ruby do %>
+~~~ruby
 component :incomplete_tasks do |c|
   c.klass = Tasks
   c.title = "Incomplete"
@@ -120,7 +120,7 @@ component :all_tasks do |c|
   c.title = "All"
   c.scope = nil
 end
-<% end %>
+~~~
 
 After reloading the page, we see that the titles indeed have been changed, but our scope configuration didn't take any effect:
 
@@ -128,7 +128,7 @@ After reloading the page, we see that the titles indeed have been changed, but o
 
 The problem is in our previously created `Tasks` component, namely in the way we specify the scope there:
 
-<% highlight :ruby do %>
+~~~ruby
 class Tasks < Netzke::Basepack::Grid
   def configure(c)
     super
@@ -136,11 +136,11 @@ class Tasks < Netzke::Basepack::Grid
     c.scope = {done: [nil, false]}
   end
 end
-<% end %>
+~~~
 
 As you can see, the scope is set *after* calling `super`, where the configuration from the `component` block is being applied. By moving it *before* `super` we'll ensure that it will get overridden from `TaskTabPanel`, thus making our `Tasks` component more configurable:
 
-<% highlight :ruby do %>
+~~~ruby
 class Tasks < Netzke::Basepack::Grid
   def configure(c)
     c.scope = {done: [nil, false]}
@@ -149,7 +149,7 @@ class Tasks < Netzke::Basepack::Grid
     # ...
   end
 end
-<% end %>
+~~~
 
 > Naturally, we could also remove it completely if we don't need any default scopes in `Tasks`
 
@@ -165,7 +165,7 @@ You have learnt how to build a simple compound component, and how to make a nest
 
 In our current implementation all the 3 instances of `Tasks` are being instantiated and added to the tab panel at the page load. This can be a performance issue when you have many tabs each containing a complex Ext JS component as grid. An alternative approach would be to load the nested components dynamically at the moment the user activates a tab for the first time. A dedicated component in netzke-basepack can do just that. All we need to do is to inherit our TaskTabPanel from `Netzke::Basepack::TabPanel`, and remove the `js_configure` section:
 
-<% highlight :ruby do %>
+~~~ruby
 class TaskTabPanel < Netzke::Basepack::TabPanel
   component :incomplete_tasks do |c|
     c.klass = Tasks
@@ -190,6 +190,6 @@ class TaskTabPanel < Netzke::Basepack::TabPanel
     c.items = [:incomplete_tasks, :completed_tasks, :all_tasks]
   end
 end
-<% end %>
+~~~
 
 ![Dynamic tabs loading](/images/2012-12-17-dynamic-tabs.png)
