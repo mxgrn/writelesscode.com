@@ -3,8 +3,8 @@ pageable: true
 per_page: 10
 ---
 <% page_articles.each_with_index do |article, i| %>
-  <h2><%= link_to article.title, article %>&nbsp;<span class="small muted"><%= article.date.strftime('%B %e, %Y') %></span></h2>
-  <%= article.summary(250) %>
+  <h3><%= link_to article.title, article %>&nbsp;<span class="small muted"><%= article.date.strftime('%B %e, %Y') %></span></h3>
+  <p class="lead"><%= article.metadata[:page]["excerpt"] %></p>
   <hr>
 <% end %>
 

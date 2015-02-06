@@ -1,5 +1,5 @@
 <% wrap_layout :layout do %>
-  <h1><%= current_article.title %></h1>
+  <h1><%= current_article.title %> <span class="small"><%= current_article.date.strftime("%B %e, %Y") %></span></h1>
   <%= yield %>
   <%= disqus %>
 <% end %>
