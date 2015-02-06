@@ -154,7 +154,7 @@ end
 
 So, if now we embedded our component in a Rails view:
 
-    <%%=  netzke :simple_list, :model => "Clerk", :item_tpl => "{last_name}" %>
+    <%=  netzke :simple_list, :model => "Clerk", :item_tpl => "{last_name}" %>
 
 ... then we would see something like this:
 
@@ -168,7 +168,7 @@ At this moment you could ask: but was it really worth it? Why taking the pain of
 
 You have surely already guessed that reusing the created component throughout our application would be really easy. Want to display a different model in a different view? No problem:
 
-    <%%=  netzke :simple_list, :model => "Boss", :item_tpl => "{last_name}, ${salary}" %>
+    <%=  netzke :simple_list, :model => "Boss", :item_tpl => "{last_name}, ${salary}" %>
 
 Here's the result:
 

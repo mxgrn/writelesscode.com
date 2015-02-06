@@ -66,11 +66,11 @@ In the application layout replace the default JavaScript and stylesheets inclusi
 <html>
 <head>
   <title>Netzke Task Manager</title>
-  <%%= netzke_init %>
-  <%%= csrf_meta_tag %>
+  <%= netzke_init %>
+  <%= csrf_meta_tag %>
 </head>
 <body>
-<%%= yield %>
+<%= yield %>
 </body>
 </html>
 ~~~
@@ -113,7 +113,7 @@ end
 We don't have much to do to see an Ext grid as an interface to our model. Simply declare Netzke GridPanel in <tt>app/views/welcome/index.html.erb</tt>:
 
 ~~~erb
-<%%= netzke :tasks, :class_name => "Netzke::Basepack::GridPanel", :model => "Task", :height => 400 %>
+<%= netzke :tasks, :class_name => "Netzke::Basepack::GridPanel", :model => "Task", :height => 400 %>
 ~~~
 
 Start the server:
@@ -131,7 +131,7 @@ It's fully functional and nice-looking already. In a moment I'll provide you wit
 With <tt>Netzke::Basepack::GridPanel</tt> you can easily customize the columns (see a [comprehensive tutorial](http://demo.netzke.org/grid_panel) about it). Let's do 2 simple things here: 1) provide the list of the columns that we want to see, excluding the <tt>created_at</tt> and <tt>updated_at</tt> columns that Rails adds by default, and 2) change the title of the "due" column to "Due on".
 
 ~~~erb
-<%%= netzke :tasks,
+<%= netzke :tasks,
   :class_name => "Netzke::Basepack::GridPanel",
   :model => "Task",
   :height => 400,
@@ -155,7 +155,7 @@ To add a title, enable the border and disable the grid's header, update the view
 ~~~erb
 <h1>Incomplete tasks</h1>
 
-<%%= netzke :tasks,
+<%= netzke :tasks,
   :class_name => "Netzke::Basepack::GridPanel",
   :model => "Task",
   :height => 400,

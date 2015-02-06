@@ -57,11 +57,11 @@ In `app/views/layouts/application.html.erb` replace the default JavaScript and s
 <html>
 <head>
   <title>Netzke Task Manager</title>
-  <%%= load_netzke %>
-  <%%= csrf_meta_tag %>
+  <%= load_netzke %>
+  <%= csrf_meta_tag %>
 </head>
 <body>
-<%%= yield %>
+<%= yield %>
 </body>
 </html>
 ~~~
@@ -108,7 +108,7 @@ end
 Our Netzke component is a Ruby class that inherits from `Grid` and is configured to use the previously created `Task` model. Now we need to embed it into our view. In `app/views/welcome/index.html.erb`, replace the default content with the following line:
 
 ~~~erb
-<%%= netzke :tasks, height: 400 %>
+<%= netzke :tasks, height: 400 %>
 ~~~
 
 Start the server:
@@ -160,7 +160,7 @@ Add the h1 header to the index page:
 
 ~~~erb
 <h1>Incomplete tasks</h1>
-<%%= netzke :tasks, height: 400 %>
+<%= netzke :tasks, height: 400 %>
 ~~~
 
 Well, that's it! Stop your stopwatch, and let's discuss in details what we've got:

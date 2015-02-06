@@ -24,7 +24,7 @@ Update `views/welcome/index.html.erb` to show our newly created component:
 
 ~~~erb
 <h1>Tasks</h1>
-<%%= netzke :task_tab_panel, height: 400 %>
+<%= netzke :task_tab_panel, height: 400 %>
 ~~~
 
 If we reload our application now, it won't be much, as our tab panel has no tabs yet. We want to see 3 tabs containing our previously created Tasks component, each showing a different subset of tasks.
