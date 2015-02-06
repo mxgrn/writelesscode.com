@@ -125,7 +125,7 @@ It's fully functional and nice-looking already. In a moment I'll provide you wit
 
 1. provide the list of the columns that we want to see (excluding the `created_at` and `updated_at`)
 2. change the title of the "due" column to "Due on"
-3. make the "notes" column fill the available width, by using the `flex` config option understood by [Ext.grid.column.Column](http://extjs.dev/docs/index.html#!/api/Ext.grid.column.Column)
+3. make the "notes" column fill the available width, by using the `flex` config option understood by `Ext.grid.column.Column`.
 4. use `Netzke::Basepack::Grid`'s `scope` config option to filter out those records that have their `done` flag set
 
 Our resulting component will look like this:
