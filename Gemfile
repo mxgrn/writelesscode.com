@@ -11,3 +11,4 @@ gem "builder", "~> 3.0"
 gem 'nokogiri'
 gem 'middleman-syntax'
 gem "middleman-disqus"
+gem 'middleman-deploy'

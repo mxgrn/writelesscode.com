@@ -16,8 +16,8 @@ activate :blog do |blog|
   # blog.summary_separator = /(READMORE)/
   # blog.summary_length = 250
   blog.year_link = "by-year/{year}/"
-  # blog.month_link = "{year}/{month}.html"
-  # blog.day_link = "{year}/{month}/{day}.html"
+  blog.month_link = "by-month/{year}/{month}.html"
+  blog.day_link = "by-day/{year}/{month}/{day}.html"
   # blog.default_extension = ".markdown"
 
   blog.tag_template = "tag.html"
@@ -64,6 +64,8 @@ activate :syntax
 page "/blog/*", layout: :post
 page "/blog/tags/*", layout: :layout
 page "/blog/by-year/*", layout: :layout
+page "/blog/by-month/*", layout: :layout
+page "/blog/by-day/*", layout: :layout
 
 # Proxy pages (http://middlemanapp.com/basics/dynamic-pages/)
 # proxy "/this-page-has-no-template.html", "/template-file.html", locals: {
@@ -113,4 +115,17 @@ configure :build do
     # using a different shortname for production builds
     d.shortname = "writelesscode"
   end
+end
+
+activate :deploy do |deploy|
+  deploy.method = :rsync
+  deploy.host   = 'writelesscode.com'
+  deploy.path   = 'www/goodbitlabs.com'
+
+  # Optional Settings
+  deploy.build_before = true
+  # deploy.user  = 'skozlov' # no default
+  # deploy.port  = 5309 # ssh port, default: 22
+  # deploy.clean = true # remove orphaned files on remote host, default: false
+  # deploy.flags = '-rltgoDvzO --no-p --del' # add custom flags, default: -avz
 end
