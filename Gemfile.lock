@@ -71,6 +71,8 @@ GEM
       rack-test (~> 0.6.2)
       thor (>= 0.15.2, < 2.0)
       tilt (~> 1.4.1, < 2.0)
+    middleman-disqus (1.0.0)
+      middleman-core (~> 3.1)
     middleman-sprockets (3.4.1)
       middleman-core (>= 3.3)
       sprockets (~> 2.12.1)
@@ -127,5 +129,6 @@ DEPENDENCIES
   builder (~> 3.0)
   middleman (~> 3.3.7)
   middleman-blog (~> 3.5.3)
+  middleman-disqus
   middleman-syntax
   nokogiri

@@ -108,4 +108,9 @@ configure :build do
 
   # Or use a different image path
   # set :http_prefix, "/Content/images/"
+
+  activate :disqus do |d|
+    # using a different shortname for production builds
+    d.shortname = "writelesscode"
+  end
 end
