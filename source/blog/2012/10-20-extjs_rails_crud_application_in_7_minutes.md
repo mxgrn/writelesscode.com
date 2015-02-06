@@ -19,10 +19,10 @@ Create a new Rails application:
 
 Add Netzke gems to your Gemfile:
 
-<% highlight :ruby do %>
+~~~ruby
 gem 'netzke-core', '~>0.8.0'
 gem 'netzke-basepack', '~>0.8.0'
-<% end %>
+~~~
 
 Install the gems:
 
@@ -37,12 +37,12 @@ Link the [Ext JS files](http://www.sencha.com/products/extjs/download/ext-js-4.1
 
 Declare Netzke routes and uncomment the root map in `config/routes.rb`:
 
-<% highlight :ruby do %>
+~~~ruby
 NetzkeTaskManager::Application.routes.draw do
   netzke
   root to: "welcome#index"
 end
-<% end %>
+~~~
 
 Generate the welcome controller:
 
@@ -52,7 +52,7 @@ Don't forget to remove `public/index.html`.
 
 In `app/views/layouts/application.html.erb` replace the default JavaScript and stylesheets inclusion with the `load_netzke` helper, so that the result looks like this:
 
-<% highlight :erb do %>
+~~~erb
 <!DOCTYPE html>
 <html>
 <head>
@@ -64,7 +64,7 @@ In `app/views/layouts/application.html.erb` replace the default JavaScript and s
 <%%= yield %>
 </body>
 </html>
-<% end %>
+~~~
 
 > Note that `load_netzke` is all what's needed to include Ext JS and Netzke scripts and stylesheets.
 
@@ -82,12 +82,12 @@ Run the migrations:
 
 We want our task to always have at least the name set, so, let's add proper validations (in `app/models/task.rb`):
 
-<% highlight do %>
+~~~ruby
 class Task < ActiveRecord::Base
   attr_accessible :done, :due, :name, :notes, :priority
   validates_presence_of :name
 end
-<% end %>
+~~~
 
 ## Creating the Tasks grid component
 Let's create our first Netzke component based on a pre-built full-featured `Netzke::Basepack::Grid`. First let's create the `app/components` folder:
@@ -96,20 +96,20 @@ Let's create our first Netzke component based on a pre-built full-featured `Netz
 
 In that folder let's create a file called tasks.rb with the following content:
 
-<% highlight :ruby do %>
+~~~ruby
 class Tasks < Netzke::Basepack::Grid
   def configure(c)
     super
     c.model = "Task"
   end
 end
-<% end %>
+~~~
 
 Our Netzke component is a Ruby class that inherits from `Grid` and is configured to use the previously created `Task` model. Now we need to embed it into our view. In `app/views/welcome/index.html.erb`, replace the default content with the following line:
 
-<% highlight :erb do %>
+~~~erb
 <%%= netzke :tasks, height: 400 %>
-<% end %>
+~~~
 
 Start the server:
 
@@ -130,7 +130,7 @@ It's fully functional and nice-looking already. In a moment I'll provide you wit
 
 Our resulting component will look like this:
 
-<% highlight :ruby do %>
+~~~ruby
 class Tasks < Netzke::Basepack::Grid
   def configure(c)
     super
@@ -145,23 +145,23 @@ class Tasks < Netzke::Basepack::Grid
     c.scope = {done: [nil, false]}
   end
 end
-<% end %>
+~~~
 
 Perfect. Let's use our last 2 minutes to do the final - purely visual - touch. To put the grid in the middle of the page, let's quickly add some inline styles into the application layout (right after the `load_netzke` helper):
 
-<% highlight :erb do %>
+~~~erb
 <style type="text/css" media="screen">
   h1 { text-align: center; margin: 10px;}
   .netzke-component { width: 800px; margin: auto; }
 </style>
-<% end %>
+~~~
 
 Add the h1 header to the index page:
 
-<% highlight :erb do %>
+~~~erb
 <h1>Incomplete tasks</h1>
 <%%= netzke :tasks, height: 400 %>
-<% end %>
+~~~
 
 Well, that's it! Stop your stopwatch, and let's discuss in details what we've got:
 

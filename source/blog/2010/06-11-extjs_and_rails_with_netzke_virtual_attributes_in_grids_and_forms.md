@@ -14,7 +14,7 @@ h3. Put it in the model, you're the boss
 
 Netzke lets you as a developer decide, where a specific virtual attribute belongs. Is it generic for a model? Can it be reused in different views or in business logic calculations? Fine, then just declare it in the model:
 
-<% highlight do %>
+~~~ruby
   class Clerk < ActiveRecord::Base
     # ...
 
@@ -28,13 +28,13 @@ Netzke lets you as a developer decide, where a specific virtual attribute belong
       updated_at > 5.minutes.ago
     end
   end
-<% end %>
+~~~
 
 bq. Check out the basics of virtual attributes in Ryan Bates' screencast "here":http://railscasts.com/episodes/16-virtual-attributes.
 
 And now we need to let grids and forms know that this is a virtual attribute (otherwise how can it be distinguished from a generic instance method?)
 
-<% highlight do %>
+~~~ruby
   class Clerk < ActiveRecord::Base
     # ...
 
@@ -50,7 +50,7 @@ And now we need to let grids and forms know that this is a virtual attribute (ot
       updated_at > 5.minutes.ago
     end
   end
-<% end %>
+~~~
 
 Perfect. This way Netzke grids and forms will pick those 2 up, just as the "real" attributes. But hey, the "updated" attribute will be rendered as "true" or "false" - not very much visually stunning. Why won't we try to display a little icon instead, a switched on bulb when "updated" returns "true", and a switched off one when it's "false"? Here's where we need to decide if such code really belongs in the model. And the answer is "no, it doesn't". Besides, what if in forms we're fine with just "true" and "false", and some other grid should display it as colored flags instead of bulbs?
 
@@ -58,7 +58,7 @@ h3. Conventions, sweet conventions
 
 A convention to rescue. Any GridPanel and FormPanel from Netzke will know, that if there's a class named in a certain way, this class will be used as the model to deliver the data, *not* the originally specified class. The convention is: <model_name>For<widget_class_name>. And it should be in Netzke::ModelExtensions module (put the class file into <tt>lib/netzke/model_extensions</tt>), e.g.:
 
-<% highlight do %>
+~~~ruby
 module Netzke::ModelExtensions
   class ClerkForGridPanel < Clerk
 
@@ -71,7 +71,7 @@ module Netzke::ModelExtensions
     end
   end
 end
-<% end %>
+~~~
 
 Two things to note here. First of all, the name of the class: <tt>ClerkForGridPanel</tt>. It means it will be effective for any widget of class GridPanel bound to the model called Clerk. Second, this class is inherited from the model itself (<tt>Clerk</tt>). Naturally, it'll have access to all the attributes of the original class (such as <tt>updated</tt>).
 
@@ -83,7 +83,7 @@ h3. Preconfiguring "real" attributes
 
 The same method, <tt>netzke_attribute</tt>, can be used to preconfigure the way the attribute's value should be displayed in grids and forms. E.g.:
 
-<% highlight do %>
+~~~ruby
 module Netzke::ModelExtensions
   class ClerkForGridPanel < Clerk
 
@@ -103,7 +103,7 @@ module Netzke::ModelExtensions
     # ...
   end
 end
-<% end %>
+~~~
 
 The "salary" attribute is "real", i.e. there's a field "salary" in the "clerks" table, while "updated_bulb" is virtual (Netzke doesn't care). Because it's clear, that <tt>ClerkForGridPanel</tt> configures attributes for a <tt>GridPanel</tt>, we can easily provide additional configuration for each Ext *column* that will be bound to a specific attribute. Setting the width? The renderer? The tooltip? The header? Almost any valid option for "Ext.grid.ColumnModel":http://www.extjs.com/deploy/dev/docs/?class=Ext.grid.ColumnModel will do.
 

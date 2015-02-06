@@ -23,7 +23,7 @@ Let me point out the most important changes in the API. This will be useful for 
 
 With this release quite a few things have been simplified. The most important is that I tried to make developing Netzke components as familiar as possible to those not new to Ext JS, keeping the level of extra knowledge needed for that as low as possible. Let's take an example. Before you'd need to use the <tt>ext_config</tt> config option to specify what configuration would go straight to the constructor for the JavaScript class:
 
-<% highlight do %>
+~~~ruby
 netzke :clerks_with_custom_bottom_bar,
     :class_name => 'GridPanel',
     :model => 'Clerk',
@@ -31,21 +31,21 @@ netzke :clerks_with_custom_bottom_bar,
       :bbar => nil,
       :tbar => [...]
     }
-<% end %>
+~~~
 
 Now you can simply do:
 
-<% highlight do %>
+~~~ruby
 netzke :clerks_with_custom_bottom_bar,
     :class_name => 'GridPanel',
     :model => 'Clerk',
     :bbar => nil,
     :tbar => [...]
-<% end %>
+~~~
 
 The idea of using <tt>ext_config</tt> was to filter out those options required for instantiating a JavaScript class. Sometimes it was pretty unclear whether a specific option should be inside of <tt>ext_config</tt> or outside of it, as in the following example:
 
-<% highlight do %>
+~~~ruby
 netzke :bosses_with_permissions, 
   :class_name => "GridPanel", 
   :model => 'Boss', 
@@ -53,25 +53,25 @@ netzke :bosses_with_permissions,
     :prohibit_update => true,
     :prohibit_delete => true
   }
-<% end %>
+~~~
 
 Why would anyone need to remember that <tt>prohibit_update</tt> should be inside <tt>ext_config</tt>? Well, it's not needed anymore. Now _everything_ that you put into the configuration hash will by default go to the constructor of the JavaScript class, unless the component decides to filter some options out by overriding the <tt>server_side_config_options</tt> method.
 
 So, the above example can now be written as follows:
 
-<% highlight do %>
+~~~ruby
 netzke :bosses_with_permissions, 
   :class_name => "GridPanel", 
   :model => 'Boss', 
   :prohibit_update => true,
   :prohibit_delete => true
-<% end %>
+~~~
 
 ### Define <tt>Ext.Container</tt>'s <tt>items</tt> directly
 
 Another example of Netzke bringing in extra things to remember was the way to define regions in <tt>BorderLayoutPanel</tt>:
 
-<% highlight do %>
+~~~ruby
 netzke :grid_and_form, 
   :class_name => "BorderLayoutPanel",
   :regions => {
@@ -91,11 +91,11 @@ netzke :grid_and_form,
       }
     }
   }
-<% end %>
+~~~
 
 What would be a more Ext way of doing this? Probably something like this:
 
-<% highlight do %>
+~~~ruby
 netzke :grid_and_form, 
   :class_name => "BorderLayoutPanel",
   :items => [{
@@ -110,11 +110,11 @@ netzke :grid_and_form,
     :model => "Clerk",
     :title => "Clerk data" # lot nicer!
   }]
-<% end %>
+~~~
 
 Well, that's exactly what you can do now! And a nice extra value of it is that now you can put _anything_ into your BorderLayoutPanel, not only a Netzke component! Before it would take a painful work around to do it, and now you can simply do the following:
 
-<% highlight do %>
+~~~ruby
 netzke :grid_and_form,
   :class_name => "BorderLayoutPanel",
   :items => [{
@@ -134,11 +134,11 @@ netzke :grid_and_form,
     :width => 300,
     :html => "I'm not a Netzke component!"
   }]
-<% end %>
+~~~
 
 Much cleaner, isn't it? But it's even more: _any_ <tt>Ext.Container</tt>-descendant-based Netzke component can embed a Netzke component as its item (thus not only <tt>BorderLayoutPanel</tt>) - the only thing needed is to specify the <tt>class_name</tt>. Here's an example of defining a <tt>Ext.TabPanel</tt>-based component from scratch:
 
-<% highlight do %>
+~~~ruby
 class SimpleTabPanel < Netzke::Base
   js_base_class "Ext.TabPanel"
 
@@ -166,7 +166,7 @@ class SimpleTabPanel < Netzke::Base
           :class_name => "ExtendedServerCaller"
         }]
 end
-<% end %>
+~~~
 
 bq. This is an example taken from the test application bundled with netzke-core - I highly recommend you to study it as it provides a good deal of other examples.
 
@@ -185,21 +185,21 @@ You probably already know that you can configure pre-built components at the mom
       :class_name => "Basepack::GridPanel", 
       :model => "User", 
       :title => "My Books" %>
-<% end %>
+~~~
 
 But what if you need some of these options to be set by default in a custom component? Say, you're extending the <tt>Basepack::GridPanel</tt>, and you want your new grid to serve specifically for displaying books, and always be protected from updates. Before you'd need to override the <tt>default_config</tt> method, but now you can simply do:
 
-<% highlight do %>
+~~~ruby
 class BooksGrid < Netzke::Basepack::GridPanel
   config  :model => "Book",
           :title => "My Books",
           :prohibit_update => true
 end
-<% end %>
+~~~
 
 This is an example of usage of the new <tt>config</tt> DSL method. It can also accept a block (returning a hash), from which you can call other instance methods:
 
-<% highlight do %>
+~~~ruby
   class BooksGrid < Netzke::Basepack::GridPanel
     config do
       {
@@ -209,23 +209,23 @@ This is an example of usage of the new <tt>config</tt> DSL method. It can also a
       }
     end
   end
-<% end %>
+~~~
 
 #### Declaring components
 
 Another DSL method is called <tt>component</tt>, and that's what you should use instead of <tt>initial_aggregatees</tt>:
 
-<% highlight do %>
+~~~ruby
 component :books, :class_name => "MySpecialGrid", :model => "Book"
-<% end %>
+~~~
 
 Then you can reference to this component when you declare the items:
 
-<% highlight do %>
+~~~ruby
 config :items => [{
   :books.component
 }]
-<% end %>
+~~~
 
 More details in [this blog post](http://writelesscode.com/blog/2009/09/24/building-rails-extjs-reusable-components-with-netzke-part-3/).
 
@@ -233,58 +233,58 @@ More details in [this blog post](http://writelesscode.com/blog/2009/09/24/buildi
 
 Use the <tt>endpoint</tt> method do declare what used to be called an _API point_. Before you would do:
 
-<% highlight do %>
+~~~ruby
 api :tell_me_the_truth
 def tell_me_the_truth(params)
   # do stuff
 end
-<% end %>
+~~~
 
 Now you can do:
 
-<% highlight do %>
+~~~ruby
 endpoint :tell_me_the_truth do |params|
   # do stuff
 end
-<% end %>
+~~~
 
 #### Defining actions
 
 Use the <tt>action</tt> method to declare actions. Before you would do:
 
-<% highlight do %>
+~~~ruby
 def actions
   super.merge({
     :add => {:title => "Add new", :icon => "the path to the add.png icon"},
     :edit => {:title => "Modify", :icon => "the path to the edit.png icon"}
   })
 end
-<% end %>
+~~~
 
 Now you can do:
 
-<% highlight do %>
+~~~ruby
 action :add, :title => "Add new", :icon => :add
 action :edit, :title => "Modify", :icon => :edit
-<% end %>
+~~~
 
 (note that providing a symbol for an FamFamFam icon simply works)
 
 Then you can reference the actions like this:
 
-<% highlight do %>
+~~~ruby
 config :bbar => [:add.action, :edit.action]
-<% end %>
+~~~
 
 Or, on the _class_ level:
 
-<% highlight do %>
+~~~ruby
 js_property :bbar, [:add.action, :edit.action]
-<% end %>
+~~~
 
 You may know that one can specify a pretty complex menu structure (as shown in [Ext JS examples](http://dev.sencha.com/deploy/dev/examples/toolbar/toolbars.html)), and all you need to do to say that some clickable item in that structure is bound to an action, is to provide the symbol followed with +.action+:
 
-<% highlight do %>
+~~~ruby
 # example taken from component_with_actions.rb from netzke-core test application
 js_property :tbar, [{
   :xtype =>  'buttongroup',
@@ -313,39 +313,39 @@ js_property :tbar, [{
       :menu => [:some_action.action], :text => 'Format'
   }]
 }]
-<% end %>
+~~~
 
 #### Defining JavaScript properties and methods
 
 Now you can use the <tt>js_method</tt> to define a public method in the component's JavaScript class, and <tt>js_property</tt> to define a public property (or <tt>js_properties</tt> to define several properties at once):
 
-<% highlight do %>
+~~~ruby
 js_method :on_edit, <<-JS
   function(){
     // do something
   }
 JS
-<% end %>
+~~~
 
-<% highlight do %>
+~~~ruby
 js_property :title, "Some Title"
-<% end %>
+~~~
 
 #### Defining JavaScript base class
 
 Use the <tt>js_base_class</tt> to specify from which JavaScript class your component's JavaScript class should be inheriting. Before you would do:
 
-<% highlight do %>
+~~~ruby
 def js_base_class
   "Ext.TabPanel"
 end
-<% end %>
+~~~
 
 Now you can simply do:
 
-<% highlight do %>
+~~~ruby
 js_base_class "Ext.TabPanel"
-<% end %>
+~~~
 
 That's it for the API changes for now. It would probably take too long to cover all the new things in details, and that's why I definitely recommend looking into the test Rails 3 application bundled with both netzke-core and netzke-basepack for more examples. Also read the [updated rdocs](http://api.netzke.org/) - I'm going to focus on documenting the code more diligently than before, so it becomes the main source of information on how to use Netzke.
 

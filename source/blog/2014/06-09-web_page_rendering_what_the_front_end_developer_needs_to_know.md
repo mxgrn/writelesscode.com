@@ -47,7 +47,7 @@ When possible, browsers optimize repaint and reflow within elements affected by 
 
 Another notable characteristic – while performing JavaScript, browsers cache all the changes, and apply them all at one after a block of code has finished executing. For example, only 1 reflow and repaint will occur after this block has been executed:
 
-<% highlight :javascript do %>
+~~~javascript
 
 var $body = $('body');
 $body.css('padding', '1px'); // reflow, repaint
@@ -55,11 +55,11 @@ $body.css('color', 'red'); // repaint
 $body.css('margin', '2px'); // reflow, repaint
 // Actually only 1 reflow and repaint occurring
 
-<% end %>
+~~~
 
 However, as described previously, a call to the element’s properties will force a reflow. So if we add a property call to the given block of code, an additional reflow will occur:
 
-<% highlight :javascript do %>
+~~~javascript
 
 var $body = $('body');
 $body.css('padding', '1px');
@@ -67,7 +67,7 @@ $body.css('padding'); // this will cause a second reflow
 $body.css('color', 'red');
 $body.css('margin', '2px');
 
-<% end %>
+~~~
 
 In the end we have two reflows instead of one. Because of that, property calls should be grouped in one place in order to optimize performance.
 
@@ -75,7 +75,7 @@ In practice, there are situations when you cannot avoid a forced reflow. Let’s
 
 We will begin with declaring a class with transition:
 
-<% highlight :javascript do %>
+~~~javascript
 
 has-transition {
    -webkit-transition: margin-left 1s ease-out;
@@ -84,11 +84,11 @@ has-transition {
            transition: margin-left 1s ease-out;
 }
 
-<% end %>
+~~~
 
 Then, we will try to implement the desired effect the following way:
 
-<% highlight :javascript do %>
+~~~javascript
 
 var $targetElem = $('#targetElemId'); // our element, by default has the class "has-transition"
 
@@ -104,12 +104,12 @@ $targetElem.addClass('has-transition');
 // changing the property
 $targetElem.css('margin-left', 50);
 
-<% end %>
+~~~
 
 
 The following solution will not work as intended, since the changes are cached and applied only at the end of a block of code. A forced reflow will aid us in achieving the goal, the resulting code will look like this, and will perform the desired task:
 
-<% highlight :javascript do %>
+~~~javascript
 
 // removing the class with transition
 $(this).removeClass('has-transition');
@@ -126,7 +126,7 @@ $(this).addClass('has-transition');
 // changing the property
 $(this).css('margin-left', 50);
 
-<% end %>
+~~~
 
 ## Practical optimization tips
 
@@ -153,7 +153,7 @@ div * {...} // bad
 .list-item {...} // good
 #list .list-item {...} // good
 
-<% end %>
+~~~
 
 In your scripts, minimize the work with DOM. Cache everything: properties, objects, if a repeated usage is implied. With complicated manipulations it is wise to work with the "offline" element (the one that is not in DOM, but in memory), and subsequently move it into DOM. When using jQuery to select elements always follow the recommendation to making selectors.
 To change the styles of elements it is better to only modify the "class" attribute, it is a more correct way both from the developing and the support standpoint (segregating the logic and appearance), and less taxing on the browser.

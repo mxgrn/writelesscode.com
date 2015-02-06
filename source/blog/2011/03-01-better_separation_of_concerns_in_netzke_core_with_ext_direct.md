@@ -19,7 +19,7 @@ And that's where Paul's contribution comes very, very handy. I can't wait to upd
 ## New way
 For the sake of even better illustration (and cleaner code), we'll extract the info panel into a separate simple component, capable of updating itself (an update mask would be very welcome also here!). Let's call it `BossDetails`:
 
-<% highlight :ruby do %>
+~~~ruby
 class BossDetails < Netzke::Basepack::Panel
   js_property :padding, 5
 
@@ -59,40 +59,40 @@ class BossDetails < Netzke::Basepack::Panel
      @boss |  | = config[:boss_id] && Boss.find(config[:boss_id]) |
     end
 end
-<% end %>
+~~~
 
 
 As you may see, the component gets a JavaScript method called "updateStats", which, in its turn, makes the call to the endpoint, as well as handles the load mask. You may also notice, that for the endpoint to respond with the HTML for a specific boss, we need to configure this component with `boss_id`. Just as in the case with the clerks grid (line 66 of the gist), we get `boss_id` from our top component's session:
 
-<% highlight do %>
+~~~ruby
 component :boss_stats do
   {
     :class_name => "BossDetails",
     :boss_id => component_session[:selected_boss_id]
   }
 end
-<% end %>
+~~~
 
 The responsibility of our top component, in respect to its children, has been cut down to setting `component_session[:selected_boss_id]` to the proper value when the user selects the boss:
 
-<% highlight do %>
+~~~ruby
 endpoint :select_boss do | params |
   component_session[:selected_boss_id] = params[:boss_id]
 end
-<% end %>
+~~~
 
 Yay, no more shaman dances around children components here!
 
 Now all what's left, is update our client-side event on selecting a row in the bosses grid (in initComponent):
 
-<% highlight :javascript do %>
+~~~javascript
 this.getChildComponent("bosses").on('rowclick', function(self, rowIndex){
   // The beauty of using Ext.Direct: calling 3 endpoints in a row, which results in a single call to the server!
   this.selectBoss({boss_id: self.store.getAt(rowIndex).get('id')});
   this.getChildComponent('clerks').getStore().reload();
   this.getChildComponent('boss_stats').updateStats();
 }, this);
-<% end %>
+~~~
 
 ## Extra thought and remarks
 
@@ -100,22 +100,22 @@ This is all very cool, you may think, but wouldn't this all work before - before
 
 Then, you may have noticed that the old version of BossesAndClerks was also updating the title for the clerks grid (line 61). How should we do it now? This is where you, as developer, will make the decision. One way would be to do just as before:
 
-<% highlight do %>
+~~~ruby
 endpoint :select_boss do | params |
   component_session[:selected_boss_id] = params[:boss_id]
   {:clerks => {:set_title => "..."}}
 end
-<% end %>
+~~~
 
 ... and it would still work perfectly. Another way - if you want to incapsulate this behavior into the clerks grid as a separate component - is, well, to create such a custom component. Inherit it from `Netzke::Basepack::GridPanel`, do all the work inside of it, and then use it instead of GridPanel in our top component:
 
-<% highlight do %>
+~~~ruby
 component :clerks do
   {
     :class_name => "MyCustomClerksGrid",
     :boss_id => component_session[:selected_boss_id]
   }
 end
-<% end %>
+~~~
 
 And that's it for this time. I hope, by now you see the power of this inner enhancement to Netzke Core, and let's show Paul our appreciation by [following him on twitter](http://twitter.com/pschyska).

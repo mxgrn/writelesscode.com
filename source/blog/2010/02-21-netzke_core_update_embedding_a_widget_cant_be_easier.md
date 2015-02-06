@@ -10,9 +10,9 @@ The Netzke project is now over a year old, and several developers have since the
 
 But first, let's see what's improved in the way we prepare our Rails application for using Netzke. In the layout, within the <tt>header</tt> tag, instead of all the previously used netzke-related helpers and includes of ExtJS, you may simply put <tt>netzke_init</tt>:
 
-<% highlight :ruby do %>
+~~~ruby
 <%%= netzke_init %>
-<% end %>    
+~~~    
 
 This will include all the JavaScript and stylesheets needed to run ExtJS and Netzke, as well as provide for <tt>Ext.onReady</tt> call to render the widgets after the page load.
 
@@ -21,47 +21,47 @@ Provided you have the <tt>map.netzke</tt> line in your <tt>config/routes.rb</tt>
 ## Grid
 Using Netzke is probably the easiest and most flexible way of integrating a full featured Ext.grid.EditorGridPanel-based grid into a Rails view. See it as scaffolding with lots of extras (such as on-the-fly reconfiguration of your grid). The code in its simplest form looks like this:
 
-<% highlight :ruby do %>
+~~~ruby
 <%%= netzke :grid_panel, :model => "Boss" %>
-<% end %>    
+~~~    
 
 In the need of deviating from the defaults, Netzke's GridPanel is very configurable. Just go [here](http://netzke-demo.writelesscode.com/grid_panel) for live demo and comprehensive examples.
 
 ## Form
 Netzke's FormPanel is almost as intelligent as GridPanel, in the sense that it provides for great defaults for the form fields, as well as flexible overrides and dynamic reconfiguration:
 
-<% highlight :ruby do %>
+~~~ruby
 <%%= netzke :form_panel, :model => "Boss", :record_id => Boss.first.id %>
-<% end %>    
+~~~    
 
 In fact, if you have played around with Netzke's GridPanel, you've probably seen FormPanel in action, when editing records in the form, doing the search, doing the dynamic reconfiguration, etc.
 
 ## Tab panel
 Netzke's TabPanel (as well as AccordionPanel below) is an example of a widget that provides for dead-simple embedding of other widgets (with or without dynamic loading):
 
-<% highlight :ruby do %>
+~~~ruby
 <%%= netzke :tab_panel, :items => [{
   :class_name => "GridPanel", :model => "Boss"
 }, {
   :class_name => "GridPanel", :model => "Clerk"
 }] %>
-<% end %>
+~~~
 
 ## Accordion panel
 The AccordionPanel has similar configuration to the TabPanel:
 
-<% highlight :ruby do %>
+~~~ruby
 <%%= netzke :accordion_panel, :items => [{
   :class_name => "GridPanel", :model => "Boss"
 }, {
   :class_name => "GridPanel", :model => "Clerk"
 }] %>
-<% end %>    
+~~~    
 
 ## A panel with the "border" layout
 This widget I use very often for creating custom complex widgets, where different nested widgets interact in a certain way (see several tutorials on this blog). The example below simply provides a panel with 3 nested widgets:
 
-<% highlight :ruby do %>
+~~~ruby
 <%%= netzke :border_layout_panel, :regions => {
   :center => {
     :class_name => "GridPanel", :model => "Boss"
@@ -76,16 +76,16 @@ This widget I use very often for creating custom complex widgets, where differen
     :region_config => {:width => 300}
   }
 } %>
-<% end %>    
+~~~    
 
 ## Window
 Recent update to Netzke made it possible to declare several Ext.Window-based widgets on a page: when a window is triggered shown, it dynamically loads the embedded widget. Here's an example of a window that embed a previously created complex widget (see the corresponding [tutorial](http://writelesscode.com/blog/2009/09/24/building-rails-extjs-reusable-components-with-netzke-part-3/)):
 
-<% highlight :ruby do %>
+~~~ruby
 <%%= netzke :window, :item => {
   :class_name => "BossesAndClerks"
 } %>
-<% end %>    
+~~~    
 
 See Netzke's window in action on the [netzke-demo page](http://netzke-demo.writelesscode.com/window).
 

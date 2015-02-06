@@ -15,13 +15,13 @@ For the most impatient, here's the link to see the resulting component in action
 
 We'll do our work in the context of the [netzke-demo project](https://github.com/netzke/netzke-demo), where we already have a couple of Ruby on Rails ActiveRecord models that we used in our previous tutorials. Let's start with creating a component called `SimpleList` (in <tt>app/components/touch/simple_list.rb</tt>):
 
-<% highlight do %>
+~~~ruby
 module Touch
   class SimpleList < Netzke::Base
     js_base_class "Ext.List"
   end
 end
-<% end %>
+~~~
 
 As you can see, the JavaScript class of our component will be extending `Ext.List`.
 
@@ -30,18 +30,18 @@ If now we try to load the component now, we wouldn't see anything, because `Ext.
 ### Overriding `initComponent`
 We could override the `initComponent` method straight in our Ruby class like this:
 
-<% highlight do %>
+~~~ruby
 js_method :init_component, <<-JS
   function(){
     // do our stuff
     Netzke.classes.Touch.SimpleList.superclass.initComponent.call(this);
   }
 JS
-<% end %>
+~~~
 
 But because our `initComponent` method will not need to change, and because I like to keep static JavaScript code separated from Ruby code, I will show you a simple technique of using the `js_mixin` method being introduced in Netzke Core 0.6.5. The idea of this method is that it allows you to "mixin" JavaScript objects declared in separate <tt>.js</tt>-files:
 
-<% highlight do %>
+~~~ruby
 module Touch
   class SimpleList < Netzke::Base
     js_base_class "Ext.List"
@@ -49,11 +49,11 @@ module Touch
     js_mixin :main
   end
 end
-<% end %>
+~~~
 
 This will, by convention, try to read a file named <tt>app/components/touch/simple_list/javascripts/main.js</tt>, where we'll define our `initComponent`:
 
-<% highlight :javascript do %>
+~~~javascript
 {
   initComponent: function() {
       Ext.regModel(this.model, {
@@ -76,7 +76,7 @@ This will, by convention, try to read a file named <tt>app/components/touch/simp
       Netzke.classes.Touch.SimpleList.superclass.initComponent.call(this);
   }
 }
-<% end %>
+~~~
 
 It's a very simple setup for the `Ext.List`, where we register a model and a data store.
 But what are `this.model`, `this.sortAttr`, `this.attrs`, and `this.data`? Where do they come from? They are our custom configuration options that we'll be passing to our JavaScript class's constructor from the Ruby class.
@@ -85,7 +85,7 @@ But what are `this.model`, `this.sortAttr`, `this.attrs`, and `this.data`? Where
 
 Passing data to the constructor of the JavaScript class can be done in a couple of different ways, one of which is overriding the `configuration` method in the Ruby class (where `super` will provide us with the configuration options passed by the user of the component - this way we'll be able to know, for example, what data model our component should be bound to):
 
-<% highlight do %>
+~~~ruby
 module Touch
   class SimpleList < Netzke::Base
     js_base_class "Ext.List"
@@ -103,7 +103,7 @@ module Touch
 
   end
 end
-<% end %>
+~~~
 
 But first let's make a step back and think about how exactly we want to be able to configure our component.
 
@@ -117,7 +117,7 @@ Because it's a very simple component, we'll make it to obey the following few co
 
 These options are accessible via the `super` call of our `configuration` methods. Having this in mind, let's write the final implementation:
 
-<% highlight do %>
+~~~ruby
 module Touch
   class SimpleList < Netzke::Base
     js_base_class "Ext.List"
@@ -150,7 +150,7 @@ module Touch
       end
   end
 end
-<% end %>
+~~~
 
 So, if now we embedded our component in a Rails view:
 
@@ -178,7 +178,7 @@ Here's the result:
 
 How difficult would it be to combine 2 components into one, say, `Ext.TabPanel`? *Very* easy with Netzke:
 
-<% highlight do %>
+~~~ruby
 module Touch
   class SimpleList < Netzke::Base
     js_base_class "Ext.List"
@@ -221,7 +221,7 @@ module Touch
       end
   end
 end
-<% end %>
+~~~
 
 The code is so straight forward, that it speaks for itself. And here's the result:
 

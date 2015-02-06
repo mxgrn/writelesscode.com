@@ -17,22 +17,22 @@ The way to do that is to override the `netzkeFeedback` method in `Netzke.classes
 
 A good place to configure `Netzke::Core` is in `config/initializers` (e.g. in a file named `netzke.rb`):
 
-<% highlight :ruby do %>
+~~~ruby
 Netzke::Core.setup do |config|
   config.ext_javascripts << "#{File.dirname(__FILE__)}/javascripts/netzke_extensions.js"
 end
-<% end %>
+~~~
 
 This will instruct Netzke to load `config/initializers/javascripts/netzke_extensions.js` along with other initial JavaScript code when a Rails view with Netzke components gets loaded. As I said before, in that file we will override `netzkeFeedback`:
 
-<% highlight :javascript do %>
+~~~javascript
 Ext.define(null, {
   override: "Netzke.classes.Core.Mixin",
   netzkeFeedback: function(msg, options) {
     alert(msg); // anything you come up with
   }
 });
-<% end %>
+~~~
 
 That's it. After this every Netzke component will get this custom implementation of the `netzkeFeedback` method.
 

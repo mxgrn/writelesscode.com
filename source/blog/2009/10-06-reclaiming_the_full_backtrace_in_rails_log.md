@@ -9,15 +9,15 @@ While debugging AJAX-reach Rails applications (which is the case when you use Ex
 
 Can't say why, but I never paid attention to the <tt>backtrace_silencers.rb</tt> file that can be found in <tt>config/initializers</tt> (if you don't have this file, you can create it, of course). In this file you can simply uncomment the following line in order to make Rails write full backtrace of the exceptions into the log:
 
-<% highlight :ruby do %>
+~~~ruby
 # Rails.backtrace_cleaner.remove_silencers!
-<% end %>
+~~~
 
 Besides that, I added the following "silencer" in order to hide hardly informative passenger-related lines:
 
-<% highlight :ruby do %>
+~~~ruby
 Rails.backtrace_cleaner.add_silencer { |line| line =~ /passenger/ }
-<% end %>
+~~~
 
 Based on this example, you can specify (as a regular expression) what is that that you never want to see in the backtrace.
 

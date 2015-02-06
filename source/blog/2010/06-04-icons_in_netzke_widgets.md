@@ -11,7 +11,7 @@ Recent update to [Netzke](http://github.com/netzke/netzke-basepack) (the framewo
 
 Let's see how we can change the icons for the GridPanel. Inherit your customized grid panel from Netzke::GridPanel (see [this tutorial](http://blog.local/blog/2009/10/05/extjs-and-rails-with-netzke-custom-widget-actions.html) for an example), and override the <tt>actions</tt> method, specifying custom icons for any of the available actions, e.g.:
 
-<% highlight :ruby do %>
+~~~ruby
 module Netzke
   class Books < GridPanel
     def actions
@@ -23,12 +23,12 @@ module Netzke
     end
   end
 end
-<% end %>
+~~~
 
 Icons location in the application is configured by setting <tt>Netzke::Base.config[:icons_uri]</tt> to the relative URL to the icons (defaults to "/images/icons"). For example (at the end of your environment.rb):
 
-<% highlight :ruby do %>
+~~~ruby
 Netzke::Base.config[:icons_uri] = "/images/iconz/"
-<% end %>
+~~~
 
 Also note, that the <tt>icon</tt> option for an action is not specific to Netzke, it's just a valid configuration option for Ext.Action.

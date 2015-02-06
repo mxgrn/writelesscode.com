@@ -18,7 +18,7 @@ describe "Actions component", ->
 
   it "should not show buttons for excluded actions", ->
     expectToNotSee button "Excluded action"
-<% end %>
+~~~
 
 And for asynchronous scenarios:
 
@@ -29,7 +29,7 @@ describe "Plugins component", ->
     wait ->
       expectToSee header "Response from server side of PluginWithEndpoints"
       done()
-<% end %>
+~~~
 
 You can find the rest of the Mocha features in [spec/mocha](https://github.com/netzke/netzke-core/tree/master/spec/mocha). Every file from that folder, corresponding to an equally named testing component, is being automatically picked up by the setup and turned into a separate RSpec spec. This way there's generally one Mocha feature for each component being tested. The specs inside that feature are being run all at once, without the need to reload the page. As a result, it's much faster now (also due to the fact that the assertions are now being executed directly in the browser).
 

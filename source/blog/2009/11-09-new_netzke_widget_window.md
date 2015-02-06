@@ -8,7 +8,7 @@ excerpt: In-depth view on how to create a Window Netzke component.
 --- 
 <em>UPDATE (2011-11-11): This tutorial is outdated with the release of netzke-basepack v0.5.0. Please, refer to <a href="http://wiki.github.com/netzke/netzke">the project's wiki</a> for updated articles.</em> Working on my client's app (the first commercial Netzke-driven application planned to go live on December 1st), I got tired of repetitively writing JavaScript/ExtJS code for different windows that pop up here and there. They were all doing a similar thing: dynamically loading some Netzke widget at the moment of being shown. Besides boring coding, it had another drawback: the windows didn't remember its dimensions and position. So, finally I asked myself: how long would it take to write an Ext.Window-based Netzke widget that would be able to aggregate other widgets just the same way as BorderLayoutPanel, TabPanel, and others do? Well, it appeared to be so simple, that I'll dare post the whole source code in this post. For those who have followed my previous tutorials, it's not going to be difficult to understand what's going on here.
 
-<% highlight :ruby do %>
+~~~ruby
 module Netzke
   # == Window
   # Ext.Window-based widget
@@ -90,11 +90,11 @@ module Netzke
     end
   end
 end
-<% end %>
+~~~
 
 The way you declare the widget is as simple as this:
 
-<% highlight :ruby do %>
+~~~ruby
 netzke :my_window, 
        :widget_class_name => "Window", 
        :item => {
@@ -108,14 +108,14 @@ netzke :my_window,
          :y => 50,
          ...
        }
-<% end %>
+~~~
 
 Of course, as always, in <tt>ext_config</tt> you may add any other configuration options that are known by Ext.Window. But there's a little sugar from Netzke: you may specify dimensions - both width and *height* - in percentage of available browser window dimensions: e.g.
 
-<% highlight :ruby do %>
+~~~ruby
 :width => "90%"
 :width => "80%"
-<% end %>
+~~~
 
 In order to use this new widget, you'll need to update to the latest Netzke gems (sudo gem update netzke-basepack). I needed to slightly modify netzke-core, so that it would correctly handle Ext.Window-based widgets, as it's not a "classical" widget that is always rendered inside of a "fit" layout, or in a div. Ext.Window doesn't need any containers, as it dynamically creates its own one when, at the moment its <tt>show</tt> method gets called.
 

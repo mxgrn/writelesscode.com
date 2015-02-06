@@ -18,20 +18,20 @@ Create a new rails application:
 
 <% highlight :text do %>
 > rails new netzke_task_manager && cd netzke_task_manager
-<% end %>
+~~~
 
 Add the Netzke gems to your Gemfile:
 
-<% highlight do %>
+~~~ruby
 gem 'netzke-core', '0.7.6'
 gem 'netzke-basepack', '0.7.6'
-<% end %>
+~~~
 
 Install the gems:
 
 <% highlight :text do %>
 > bundle install
-<% end %>
+~~~
 
 Link the Ext library and, optionally, the [FamFamFam silk icons](http://www.famfamfam.com/lab/icons/silk/), for example (most probably no copy-pasting here!):
 
@@ -39,29 +39,29 @@ Link the Ext library and, optionally, the [FamFamFam silk icons](http://www.famf
 > ln -s ~/code/extjs/ext-4.0.7 public/extjs
 > mkdir public/images
 > ln -s ~/assets/famfamfam-silk public/images/icons
-<% end %>
+~~~
 
 Declare Netzke routes and uncomment the root map in routes.rb:
 
-<% highlight do %>
+~~~ruby
 NetzkeTaskManager::Application.routes.draw do
   netzke
   root :to => "welcome#index"
   # ...
 end
-<% end %>
+~~~
 
 Generate the welcome controller:
 
 <% highlight :text do %>
 > rails g controller welcome index
-<% end %>
+~~~
 
 Don't forget to remove <tt>public/index.html</tt>.
 
 In the application layout replace the default JavaScript and stylesheets inclusion with the <tt>netzke_init</tt> helper, so that the result looks like this:
 
-<% highlight :erb do %>
+~~~erb
 <!DOCTYPE html>
 <html>
 <head>
@@ -73,7 +73,7 @@ In the application layout replace the default JavaScript and stylesheets inclusi
 <%%= yield %>
 </body>
 </html>
-<% end %>
+~~~
 
 > Note that <tt>netzke_init</tt> is all what's needed to include Ext and Netzke JavaScript and stylesheets.
 
@@ -85,42 +85,42 @@ Let's create the Task model that will have a name, priority, notes, due date, an
 
 <% highlight :text do %>
 > rails g model Task done:boolean name:string notes:text priority:integer due:date
-<% end %>
+~~~
 
 Modify the migrations file (<tt>db/migrate/xxx_create_tasks.rb</tt>) slightly to have the "done" flag set to <tt>false</tt> by default:
 
-<% highlight do %>
+~~~ruby
   t.boolean :done, :default => false
-<% end %>
+~~~
 
 Run the migrations:
 
 <% highlight :text do %>
 > rake db:migrate
-<% end %>
+~~~
 
 We want our task to always have at least the name set, so, let's add the proper validations. And set the default scope to only give us incomplete tasks:
 
-<% highlight do %>
+~~~ruby
 class Task < ActiveRecord::Base
   validates_presence_of :name
   default_scope :conditions => {:done => false}
 end
-<% end %>
+~~~
 
 ## Embedding Netzke grid panel
 
 We don't have much to do to see an Ext grid as an interface to our model. Simply declare Netzke GridPanel in <tt>app/views/welcome/index.html.erb</tt>:
 
-<% highlight :erb do %>
+~~~erb
 <%%= netzke :tasks, :class_name => "Netzke::Basepack::GridPanel", :model => "Task", :height => 400 %>
-<% end %>
+~~~
 
 Start the server:
 
 <% highlight :text do %>
 > rails s
-<% end %>
+~~~
 
 ... and see how it looks on [http://localhost:3000/](http://localhost:3000/):
 
@@ -130,29 +130,29 @@ It's fully functional and nice-looking already. In a moment I'll provide you wit
 
 With <tt>Netzke::Basepack::GridPanel</tt> you can easily customize the columns (see a [comprehensive tutorial](http://demo.netzke.org/grid_panel) about it). Let's do 2 simple things here: 1) provide the list of the columns that we want to see, excluding the <tt>created_at</tt> and <tt>updated_at</tt> columns that Rails adds by default, and 2) change the title of the "due" column to "Due on".
 
-<% highlight :erb do %>
+~~~erb
 <%%= netzke :tasks,
   :class_name => "Netzke::Basepack::GridPanel",
   :model => "Task",
   :height => 400,
   :columns => [:done, :name, :notes, :priority, {:name => :due, :header => "Due on"}]
 %>
-<% end %>
+~~~
 
 Perfect. Let's use our last 2 minutes to do the final - purely visual - touch. Let's display our grid in the middle of the page, under a title, without that thick blue header, and with a nice border around. And also let's adjust some columns' default width and make them automatically occupy the whole available width of the grid.
 
 To put the grid in the middle of the page, let's quickly add some inline styles into the application layout (after the <tt>netzke_init</tt> helper):
 
-<% highlight :erb do %>
+~~~erb
 <style type="text/css" media="screen">
   h1 { text-align: center; margin: 10px;}
   .netzke-component { width: 700px; margin: auto; }
 </style>
-<% end %>
+~~~
 
 To add a title, enable the border and disable the grid's header, update the view:
 
-<% highlight :erb do %>
+~~~erb
 <h1>Incomplete tasks</h1>
 
 <%%= netzke :tasks,
@@ -171,7 +171,7 @@ To add a title, enable the border and disable the grid's header, update the view
     :force_fit => true # force the columns to occupy all the available width
   }
 %>
-<% end %>
+~~~
 
 Well, that's it! Stop your stopwatch, and let's discuss in details what we've got:
 

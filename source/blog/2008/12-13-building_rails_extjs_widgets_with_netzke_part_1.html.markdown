@@ -29,9 +29,9 @@ Install netzke-core as a Rails plugin (the latest and greatest version, as compa
 
 Declare the Netzke routes somewhere in routes.rb:
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 map.netzke
-<% end %>
+~~~
 
 > This declares the routes that Netzke will be using for client-server communication (among the rest).
 
@@ -43,7 +43,7 @@ Delete the Rails' index file (public/index.html).
 
 Create a simple application layout (in 'app/views/layout/application.html.erb'):
 
-<% coderay(:lang => 'html') do %>
+~~~html
 <head>
   <title>My first Netzke widget</title>
   <%%= netzke_init %>
@@ -51,7 +51,7 @@ Create a simple application layout (in 'app/views/layout/application.html.erb'):
 <body>
   <%%= yield %>
 </body>
-<% end %>
+~~~
 
 > Note the `netzke_init` helper in the "header" section: it provides for all the necessary JS and CSS includes, both for ExtJS and Netzke. Enabling Netzke in your views is as simple as that.
 
@@ -61,52 +61,52 @@ Enough with the preparations, let's get to the fun part.
 
 Create the folder "lib/netzke", and inside it a file called "my\_tree.rb" - here goes the code for our widget. Define the widget class in it:
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 class Netzke::MyTree < Netzke::Base
 end
-<% end %>
+~~~
 
 This is enough for the simplest widget (by default, it results in a JS class inheriting from `Ext.Panel`). Let's embed it into our index.html.erb:
 
-<% coderay(:lang => 'html') do %>
+~~~html
 <h1>My tree panel</h1>
 <div style='width: 300px;'>
   <%%= netzke :my_tree %>
 </div>
-<% end %>
+~~~
 
 As you see, embedding a Netzke widget into a view is done with the `netzke` helper. See the result in the browser. It's very basic, but it works, right?
 
 You can specify the majority of options of the `Ext.Panel` component in the `:ext_config` hash, and this is where, I hope, it starts getting interesting. Try the following, for instance:
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 <%%= netzke :my_tree, :ext_config => {
   :html => 'Just a simple panel for now',
   :title => 'Here comes the tree',
   :body_style => "padding: 5px;",
   :border => true
 }%>
-<% end %>
+~~~
 
 Ok, let's get rid of `:ext_config`, and make the JS part of our widget inherit from `Ext.tree.TreePanel` (instead of the default `Ext.Panel`). We do it by defining the `js_base_class` class method in our `MyTree` class:
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 class Netzke::MyTree < Netzke::Base
   def self.js_base_class
     "Ext.tree.TreePanel"
   end
 end
-<% end %>
+~~~
 
 Also, `Ext.tree.TreePanel` requires a root to be defined, we do it in `js_extend_properties` class method:
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 def self.js_extend_properties
   {
     :root => {:text => 'Root', :id => 'source'}
   }
 end
-<% end %>
+~~~
 
 > In `js_extend_properties` define all the properties that the JS class will have by default, including its public functions (including the overrides), such as `initComponent`, which we are going to define below.
 
@@ -119,11 +119,11 @@ In order to make the tree dynamically load its nodes from the server, we'll need
 
 Add `acts_as_tree` line into app/models/folder.rb, so that it looks like this:
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 class Folder < ActiveRecord::Base
   acts_as_tree
 end
-<% end %>
+~~~
 
 Also, `acts_as_tree` comes as a Rails plugin, so we'll need to install it, too:
 
@@ -131,12 +131,12 @@ Also, `acts_as_tree` comes as a Rails plugin, so we'll need to install it, too:
 
 To seed some data into the tree, add the following into db/seeds.rb:
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 # Initial tree data
 root = Folder.create(:name => '/')
 root.children.create(:name => 'One')
 root.children.create(:name => 'Two').children.create(:name => 'Three')
-<% end %>
+~~~
 
 Now, run the migrations and seed the data:
 
@@ -145,16 +145,16 @@ Now, run the migrations and seed the data:
 ## Server part of the widget
 Now, how do we implement the communication between the browser and the server? Netzke makes it very easy. We need to declare the interface between the client and the server sides of the widget. Use the `api` class method of Netzke:
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 class Netzke::MyTree < Netzke::Base
   api :get_children
   ...
 end
-<% end %>
+~~~
 
 It will automatically provide for the following. The client side of the widget will get the method `getChildren`, which will initiate the AJAX communication with the server side. Calling this method will result in a remote call to the widget's instance method `get_children`. This is explained in detail [here](http://wiki.github.com/netzke/netzke/client-server-communication-within-a-netzke-widget), and covered in the [third part of the tutorial](/blog/2009/09/24/building-rails-extjs-reusable-components-with-netzke-part-3/). However, in this particular case, we will not need to call the server side explicitly, but rather provide `Ext.tree.TreePanel` with a URL from which it will be able to fetch the data (see [Ext.tree.TreePanel documentation](http://www.extjs.com/deploy/dev/docs/?class=Ext.tree.TreePanel) for details). We'll do it by overriding the `initComponent` method (that any `Ext.Component` has):
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 # New and overriden properties of the resulting JS class
 def self.js_extend_properties
   {
@@ -169,38 +169,38 @@ def self.js_extend_properties
     END_OF_JAVASCRIPT
   }
 end
-<% end %>
+~~~
 
 > In order to retrieve the URL for a specific API point, we use Netzke's `buildApiUrl` method. This abstracts away the fact that each JS instance of a Netzke widget finds a way to connect to its proper Ruby instance. This is what provides us with high reusability (see the next section).
 
 Now we only need to implement the server side of the interface:
 
-<% coderay(:lang => 'ruby') do %>
+~~~ruby
 def get_children(params)
   klass = config[:model].constantize
   node = params[:node] == 'source' ? klass.find_by_parent_id(nil) : klass.find(params[:node].to_i)
   node.children.map{|n| {:text => n.name, :id => n.id}}
 end
-<% end %>
+~~~
 
 The method returns an array of tree nodes, which Netzke will translate into JSON format and pass to the client as a response to the AJAX request. You see that this method uses the configuration parameter "model", which we should provide to our widget so that it knows which Rails model should be used for the data. Add it to the `netzke` helper call in the view:
 
-<% coderay(:lang => 'html') do %>
+~~~html
 <h1>My tree</h1>
 <div style='width: 300px;'>
   <%%= netzke :my_tree, :model => "Folder" %>
 </div>
-<% end %>
+~~~
 
 That's it! Reload your browser page and see the result.
 
 ## Reusability of Netzke widgets
 The best part of having a Netzke widget like this, is that it's very easily reusable. To start with, you may have multiple MyTree's in the same view (and Netzke is smart enough to not duplicate JS class definitions for each widget's instance). In order to do that, simply name them differently, and provide individual configuration for each one. Netzke will take care of each client-side instance of the widget talking to its proper server-side instance:
 
-<% coderay(:lang => 'html') do %>
+~~~html
 <%%= netzke :my_first_tree, :class_name => "MyTree", :model => "Folder", :ext_config => {:title => "Folders"} %>
 <%%= netzke :my_second_tree, :class_name => "MyTree", :model => "Categories", :ext_config => {:title => "Categories"} %>
-<% end %>
+~~~
 
 > We didn't have to specify `class_name` option before, because, by convention, Netzke could infer it from the widget's name.
 
