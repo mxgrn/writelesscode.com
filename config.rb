@@ -15,7 +15,7 @@ activate :blog do |blog|
   blog.layout = "layout"
   # blog.summary_separator = /(READMORE)/
   # blog.summary_length = 250
-  # blog.year_link = "{year}.html"
+  blog.year_link = "by-year/{year}/"
   # blog.month_link = "{year}/{month}.html"
   # blog.day_link = "{year}/{month}/{day}.html"
   # blog.default_extension = ".markdown"
@@ -60,6 +60,10 @@ activate :syntax
 # with_layout :admin do
 #   page "/admin/*"
 # end
+
+page "/blog/*", layout: :post
+page "/blog/tags/*", layout: :layout
+page "/blog/by-year/*", layout: :layout
 
 # Proxy pages (http://middlemanapp.com/basics/dynamic-pages/)
 # proxy "/this-page-has-no-template.html", "/template-file.html", locals: {

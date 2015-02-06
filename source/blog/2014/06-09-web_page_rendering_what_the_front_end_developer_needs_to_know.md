@@ -146,7 +146,7 @@ Strive to simplify and optimize CSS selectors (this is often neglected by develo
 
 It must be noted that the browser is processing selectors from left to right, when selecting a key selector (the far right one) you should choose the most effective – identifier and class.
 
-<% highlight :html do %>
+~~~html
 
 div * {...} // bad
 .list li {...} // bad

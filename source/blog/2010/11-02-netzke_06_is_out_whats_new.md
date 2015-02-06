@@ -180,7 +180,7 @@ Before, when you were creating custom Netzke components, you would need to overr
 
 You probably already know that you can configure pre-built components at the moment of embedding them into a view:
 
-<% highlight :html do %>
+~~~html
 <%%= netzke :books, 
       :class_name => "Basepack::GridPanel", 
       :model => "User", 
