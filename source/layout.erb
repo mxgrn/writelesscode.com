@@ -14,7 +14,7 @@
         <div class="col-lg-12">
           <h1><a href="/">writelesscode</a></h1>
           <p class="lead text-muted">
-            Rails, Ext JS, Netzke and other stuff
+            On Rails, Ext JS, Netzke, and nomadic lifestyle
           </p>
         </div>
 
@@ -26,16 +26,9 @@
           <div class="text-right">
             <img class="img-circle" width=75 height=75 src="/images/mxgrn.png"/>
             <h4>Max Gorin</h4>
-            <p>Digital nomad, web-developer, entrepreneur, author of <a href="http://netzke.org">Netzke</a>, speaker, and founder of <a href="http://goodbitlabs.com">Good Bit Labs</a>.</p>
+            <p>Web developer, author of <a href="http://netzke.org">Netzke</a>, digital nomad, speaker, founder of <a href="http://goodbitlabs.com">Good Bit Labs</a>.</p>
             <p><a href="https://twitter.com/mxgrn">Twitter</a> | <a href="https://github.com/mxgrn">GitHub</a> | <a href="http://www.linkedin.com/in/mxgrn">LinkedIn</a></p>
           </div>
-
-          <h3>Recent Articles</h3>
-          <ol>
-            <% blog.articles[0...10].each do |article| %>
-              <li><%= link_to article.title, article %> <span><%= article.date.strftime('%b %e \'%y') %></span></li>
-            <% end %>
-          </ol>
 
           <h3>Tags</h3>
           <ol>
