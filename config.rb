@@ -113,7 +113,7 @@ configure :build do
 
   activate :disqus do |d|
     # using a different shortname for production builds
-    d.shortname = "writelesscode"
+    d.shortname = ""
   end
 end
 
@@ -126,8 +126,8 @@ end
 
 activate :deploy do |deploy|
   deploy.method = :rsync
-  deploy.host   = 'writelesscode.com'
-  deploy.path   = 'www/writelesscode.com'
+  deploy.host   = '.com'
+  deploy.path   = ''
 
   # Optional Settings
   deploy.build_before = true
