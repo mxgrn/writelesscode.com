@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv='X-UA-Compatible' content='IE=edge;chrome=1' />
-    <title>writelesscode<%= ' - ' + current_article.title unless current_article.nil? %></title>
+    <title>add title tag<%= ' - ' + current_article.title unless current_article.nil? %></title>
     <%= feed_tag :atom, "#{blog.options.prefix.to_s}/feed.xml", title: "Atom Feed" %>
     <link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/pygments/css/default.css" rel="stylesheet">
@@ -12,9 +12,9 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <h1><a href="/">writelesscode</a></h1>
+          <h1><a href="/">name the site</a></h1>
           <p class="lead text-muted">
-            On Rails, Ext JS, Netzke, and nomadic lifestyle
+            subtext
           </p>
         </div>
 
@@ -24,10 +24,10 @@
 
         <div class="col-lg-4">
           <div class="text-right">
-            <img class="img-circle" width=75 height=75 src="/images/mxgrn.png"/>
-            <h4>Max Gorin</h4>
-            <p>Web developer, author of <a href="http://netzke.org">Netzke</a>, digital nomad, speaker, founder of <a href="http://goodbitlabs.com">Good Bit Labs</a>.</p>
-            <p><a href="https://twitter.com/mxgrn">Twitter</a> | <a href="https://github.com/mxgrn">GitHub</a> | <a href="http://www.linkedin.com/in/mxgrn">LinkedIn</a></p>
+            <img class="img-circle" width=75 height=75 src=""/>
+            <h4>Erik Grueter</h4>
+            <p>subtext description</p>
+            <p><a href="">Twitter</a> | <a href="">GitHub</a> | <a href="">LinkedIn</a></p>
           </div>
 
           <h3>Tags</h3>
@@ -49,7 +49,7 @@
       <div class="row">
         <div class="col-lg-12">
           <hr>
-          © <%= Date.today.year %> Max Gorin | Ama et fac quod vis | <a href="http://feeds.feedburner.com/writelesscode">RSS</a>
+          © <%= Date.today.year %> Erik Grueter <a href="">RSS</a>
         </div>
       </p>
     </footer>
@@ -59,6 +59,7 @@
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      // Swap out google analytics ID
       ga('create', 'UA-6610062-9', 'auto');
       ga('send', 'pageview');
     </script>
